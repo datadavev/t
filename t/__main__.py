@@ -50,7 +50,7 @@ def _printRow(row, t_format):
     return line
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click.option(
     "-F",
     "--outformat",
@@ -63,6 +63,8 @@ def _printRow(row, t_format):
 def main(ctx, out_format):
     ctx.ensure_object(dict)
     ctx.obj["format"] = out_format
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(showTimes)
     return 0
 
 
