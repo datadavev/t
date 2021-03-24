@@ -1,5 +1,24 @@
 import datetime
 
+JSON_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+"""datetime format string for generating JSON content
+"""
+
+def datetimeToJsonStr(dt):
+    if dt is None:
+        return None
+    if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+        # Naive timestamp, convention is this must be UTC
+        return f"{dt.strftime(JSON_TIME_FORMAT)}Z"
+    return dt.strftime(JSON_TIME_FORMAT)
+
+
+def _jsonConverter(o):
+    if isinstance(o, datetime.datetime):
+        return datetimeToJsonStr(o)
+    return o.__str__()
+
+
 def generateDayMatrix(tzones, for_date):
     t0 = for_date.astimezone()
     row = ['Local', ]
