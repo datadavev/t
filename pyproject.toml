@@ -1,9 +1,15 @@
 [tool.poetry]
-name = "t"
+name = "myt"
 version = "0.2.0"
 description = "Time, zones"
 authors = ["datadavev <605409+datadavev@users.noreply.github.com>"]
 license = "Apache 2.0"
+homepage = "https://github.com/datadavev/t"
+repository = "https://github.com/datadavev/t"
+keywords = ["time", "timezones", "utility"]
+packages = [
+    {include = "t"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.7"
