@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "myt"
-version = "0.2.2"
+version = "0.2.3"
 description = "Time, zones"
 readme = "README.md"
 authors = ["datadavev <605409+datadavev@users.noreply.github.com>"]

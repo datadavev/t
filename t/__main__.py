@@ -29,13 +29,16 @@ DEFAULT_ZONES = [
     "Australia/Sydney",
 ]
 
+
 def _dtDeltaHours(td):
-    return td.seconds/3600.0 + td.days*24.0
+    return td.seconds / 3600.0 + td.days * 24.0
+
 
 def _hrsToHHMM(hrs):
     hh = int(hrs)
-    mm = int(60*abs(hrs-hh))
-    return hh,mm
+    mm = int(60 * abs(hrs - hh))
+    return hh, mm
+
 
 def _printRow(row, t_format):
     tz = row[0]
@@ -50,12 +53,12 @@ def _printRow(row, t_format):
     return line
 
 
-@click.group(invoke_without_command=True)
+@click.group()
 @click.option(
     "-F",
     "--outformat",
     "out_format",
-    type=click.Choice(["text", "json"],case_sensitive=False),
+    type=click.Choice(["text", "json"], case_sensitive=False),
     default="text",
     help="Output format (text | json)",
 )
@@ -63,8 +66,6 @@ def _printRow(row, t_format):
 def main(ctx, out_format):
     ctx.ensure_object(dict)
     ctx.obj["format"] = out_format
-    if ctx.invoked_subcommand is None:
-        ctx.invoke(showTimes)
     return 0
 
 
@@ -75,20 +76,18 @@ def listTimeZones(ctx, date_str):
     if date_str is None:
         for_date = datetime.datetime.now()
     else:
-        for_date = dateparser.parse(
-            date_str
-        )
+        for_date = dateparser.parse(date_str)
     res = []
     for tz in pytz.common_timezones:
         z = pytz.timezone(tz)
         ofs = z.utcoffset(for_date)
         res.append((_dtDeltaHours(ofs), z.zone))
     res.sort()
-    if ctx.obj['format'] == 'json':
+    if ctx.obj["format"] == "json":
         print(json.dumps(res))
         return 0
     for row in res:
-        hh,mm = _hrsToHHMM(row[0])
+        hh, mm = _hrsToHHMM(row[0])
         print(f"{hh:+03d}:{mm:02} {row[1]}")
     return 0
 
@@ -124,6 +123,7 @@ def showZones(ctx, t_format, date_str, zone_list):
         print(_printRow(row, t_format))
     return 0
 
+
 @main.command("t", help="Time in different zones")
 @click.option("-t", "--date", "date_str", default=None, help="Date for calculation")
 @click.option(
@@ -143,7 +143,7 @@ def showTimes(ctx, date_str, zone_list):
         )
     zone_list = zone_list.split(",")
     res = [
-        ('Local', for_date.astimezone()),
+        ("Local", for_date.astimezone()),
     ]
     for tzstr in zone_list:
         tz = pytz.timezone(tzstr.strip())
@@ -154,6 +154,7 @@ def showTimes(ctx, date_str, zone_list):
         return 0
     for row in res:
         print(f"{row[0]:17} {t.datetimeToJsonStr(row[1])}")
+
 
 if __name__ == "__main__":
     sys.exit(main(auto_envvar_prefix="T"))
