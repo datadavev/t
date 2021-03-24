@@ -3,6 +3,10 @@
 Simple command line tool for showing time in different time zones.
 
 ```
+pip install --user myt
+```
+
+```
 Usage: t [OPTIONS] COMMAND [ARGS]...
 
 Options:
