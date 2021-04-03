@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "myt"
-version = "0.2.3"
+version = "0.2.2"
 description = "Time, zones"
 readme = "README.md"
 authors = ["datadavev <605409+datadavev@users.noreply.github.com>"]
@@ -17,6 +17,7 @@ python = "^3.7"
 dateparser = "^1.0.0"
 click = "^7.1.2"
 pytz = "^2021.1"
+ics = {git = "https://github.com/ics-py/ics-py.git", rev = "timezones"}
 
 [tool.poetry.dev-dependencies]
 black = {version = "^20.8b1", allow-prereleases = true}

@@ -7,6 +7,7 @@ import click
 import pytz
 import dateparser
 import t
+import ics
 
 W = "\033[0m"  # white (normal)
 R = "\033[31m"  # red
@@ -16,7 +17,6 @@ B = "\033[34m"  # blue
 P = "\033[35m"  # purple
 
 DEFAULT_ZONES = [
-    "Europe/Copenhagen",
     "UTC",
     "US/Eastern",
     "US/Central",
@@ -27,6 +27,12 @@ DEFAULT_ZONES = [
     "Pacific/Tahiti",
     "Pacific/Auckland",
     "Australia/Sydney",
+    "Australia/Darwin",
+    "Asia/Hong_Kong",
+    "Asia/Tokyo",
+    "Asia/Kathmandu",
+    "Europe/Riga",
+    "Europe/Copenhagen",
 ]
 
 
@@ -55,17 +61,16 @@ def _printRow(row, t_format):
 
 @click.group()
 @click.option(
-    "-F",
-    "--outformat",
-    "out_format",
-    type=click.Choice(["text", "json"], case_sensitive=False),
-    default="text",
-    help="Output format (text | json)",
+    "-J",
+    "--json",
+    "json_format",
+    is_flag = True,
+    help="Output in JSON",
 )
 @click.pass_context
-def main(ctx, out_format):
+def main(ctx, json_format):
     ctx.ensure_object(dict)
-    ctx.obj["format"] = out_format
+    ctx.obj["json_format"] = json_format
     return 0
 
 
@@ -83,7 +88,7 @@ def listTimeZones(ctx, date_str):
         ofs = z.utcoffset(for_date)
         res.append((_dtDeltaHours(ofs), z.zone))
     res.sort()
-    if ctx.obj["format"] == "json":
+    if ctx.obj["json_format"]:
         print(json.dumps(res))
         return 0
     for row in res:
@@ -115,7 +120,7 @@ def showZones(ctx, t_format, date_str, zone_list):
     for tz in zone_list:
         t_zones.append(pytz.timezone(tz.strip()))
     res = t.generateDayMatrix(t_zones, for_date)
-    if ctx.obj["format"] == "json":
+    if ctx.obj["json_format"]:
         print(json.dumps(res, default=t._jsonConverter))
         return 0
     print(_printRow(res[0], t_format))
@@ -149,12 +154,50 @@ def showTimes(ctx, date_str, zone_list):
         tz = pytz.timezone(tzstr.strip())
         dt = for_date.astimezone(tz)
         res.append((tz.zone, dt))
-    if ctx.obj["format"] == "json":
+    if ctx.obj["json_format"]:
         print(json.dumps(res, default=t._jsonConverter))
         return 0
     for row in res:
         print(f"{row[0]:17} {t.datetimeToJsonStr(row[1])}")
 
+def eventToJson(e):
+    res = {}
+    res['start'] = e.begin.astimezone(t.localTimezone())
+    res['end'] = e.end.astimezone(t.localTimezone())
+    res['summary'] = t._stripper(e.summary)
+    res['description'] = t._stripper(e.description)
+    res['location'] = e.location
+    res['status'] = e.status
+    res['duration'] = e.duration
+    return res
 
+@main.command("c", short_help="Show calendar .ics")
+@click.argument("cal_file")
+@click.pass_context
+def showCalendar(ctx, cal_file):
+    cc = None
+    if not cal_file.startswith("http"):
+        if not os.path.exists(cal_file):
+            print(f"{R}Oops!{W} Can't find the .ics file: {cal_file}")
+            return 1
+        cc = ics.Calendar(open(cal_file, "r").read())
+    if cc is None:
+        print(f"{R}Oops!{W} No calendar loaded")
+    n_events = len(cc.events)
+    print(f"{G}{len(cc.events)} event{'' if n_events ==0 else 's'}{W} in {cal_file}")
+    i = 1
+    while len(cc.events) > 0:
+        evnt = cc.events.pop()
+        ej = eventToJson(evnt)
+        if ctx.obj["json_format"]:
+            print(json.dumps(ej, indent=2, default=t._jsonConverter))
+        else:        
+            print(f"Summary: {evnt.summary}")
+            print(f"Description: {evnt.description}")
+            print(f"Location: {evnt.location}")
+            print(f"URL: {evnt.url}")
+            print(f"Start: {evnt.begin}  {evnt.begin.astimezone(t.localTimezone())}")
+            print(f"End: {evnt.end}  {evnt.end.astimezone(t.localTimezone())}")
+        
 if __name__ == "__main__":
     sys.exit(main(auto_envvar_prefix="T"))

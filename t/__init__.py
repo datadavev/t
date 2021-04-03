@@ -4,6 +4,10 @@ JSON_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 """datetime format string for generating JSON content
 """
 
+def localTimezone():
+    tznow = datetime.datetime.now().astimezone()
+    return tznow.tzinfo
+
 def datetimeToJsonStr(dt):
     if dt is None:
         return None
@@ -38,3 +42,10 @@ def generateDayMatrix(tzones, for_date):
             row.append(t2)
         res.append(row)
     return res
+
+def _stripper(s):
+    try:
+        return s.strip()
+    except:
+        pass
+    return s
