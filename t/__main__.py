@@ -7,6 +7,7 @@ import click
 import pytz
 import dateparser
 import t
+import requests
 import ics
 
 W = "\033[0m"  # white (normal)
@@ -181,6 +182,8 @@ def showCalendar(ctx, cal_file):
             print(f"{R}Oops!{W} Can't find the .ics file: {cal_file}")
             return 1
         cc = ics.Calendar(open(cal_file, "r").read())
+    else:
+        cc = ics.Calendar(requests.get(cal_file, timeout=10).text)
     if cc is None:
         print(f"{R}Oops!{W} No calendar loaded")
     n_events = len(cc.events)
@@ -199,5 +202,36 @@ def showCalendar(ctx, cal_file):
             print(f"Start: {evnt.begin}  {evnt.begin.astimezone(t.localTimezone())}")
             print(f"End: {evnt.end}  {evnt.end.astimezone(t.localTimezone())}")
         
+
+@main.command("s", short_help="Sun and moon")
+@click.option("-l", "--location", default=None, help="Location as longitude,latitude (WGS84, dd)")
+@click.option("-t", "--date", "date_str", default=None, help="Date for calculation")
+@click.pass_context
+def getSolarInfo(ctx, location, date_str):
+    for_date = None
+    if date_str is None:
+        for_date = datetime.datetime.now().astimezone()
+    else:
+        for_date = dateparser.parse(
+            date_str, settings={"RETURN_AS_TIMEZONE_AWARE": True}
+        )
+    _location = {"latitude":0.0, "longitude":0.0}
+    if location is not None:
+        ltlg = location.strip().split(",")
+        if len(ltlg) != 2:
+            print("Location should be longitude,latitude")
+            return 1
+        _location["longitude"] = float(ltlg[0].strip())
+        _location["latitude"] = float(ltlg[1].strip())
+    else:
+        location = t.guessLocation()
+    res = t.solarInfo(for_date, _location["longitude"], _location["latitude"])
+    if ctx.obj["json_format"]:
+        print(json.dumps(res, default=t._jsonConverter))
+        return 0
+    print(f"Sunrise: {res['sunrise']}")
+    print(f"Sunset: {res['sunset']}")
+
+
 if __name__ == "__main__":
     sys.exit(main(auto_envvar_prefix="T"))

@@ -1,4 +1,8 @@
+import pytz
 import datetime
+import json
+import requests
+from . import suncalc
 
 JSON_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 """datetime format string for generating JSON content
@@ -16,6 +20,19 @@ def datetimeToJsonStr(dt):
         return f"{dt.strftime(JSON_TIME_FORMAT)}Z"
     return dt.strftime(JSON_TIME_FORMAT)
 
+
+def utcFromDateTime(dt, assume_local=True):
+    # is dt timezone aware?
+    if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
+        if assume_local:
+            # convert local time to tz aware utc
+            dt.astimezone(datetime.timezone.utc)
+        else:
+            # asume dt is in UTC, add timezone
+            dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return dt
+    # convert to utc timezone
+    return dt.astimezone(datetime.timezone.utc)
 
 def _jsonConverter(o):
     if isinstance(o, datetime.datetime):
@@ -49,3 +66,20 @@ def _stripper(s):
     except:
         pass
     return s
+
+
+def guessLocation():
+    '''Guess location from external ip
+    '''
+    service = "http://radio.garden/api/geo"
+    res = requests.get(service, timeout=5)
+    data = res.json
+    return data
+
+
+def solarInfo(dt, longitude, latitude):
+    udt = utcFromDateTime(dt, assume_local=True)
+    info = suncalc.getTimes(dt, latitude, longitude)
+    moon = suncalc.getMoonIllumination(udt)
+    info.update(moon)
+    return info
