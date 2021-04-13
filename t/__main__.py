@@ -250,7 +250,7 @@ def getSolarInfo(ctx, location, date_str, t_format):
 @main.command("m", short_help="Moon matrix")
 @click.option("-y", "--year", "year_str", default=None, help="Year for calculation")
 @click.pass_context
-def getSolarInfo(ctx, location, year_str):
+def getSolarInfo(ctx, year_str):
     cyear = 2021
     if year_str is None:
         cyear = datetime.datetime.now().astimezone().year
