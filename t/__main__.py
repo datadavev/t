@@ -241,7 +241,7 @@ def getSolarInfo(ctx, location, date_str, t_format):
     t3 = (
         res['goldenHour'].astimezone(t.localTimezone()).strftime(t_format),
         res['sunset'].astimezone(t.localTimezone()).strftime(t_format),
-        res['dawn'].astimezone(t.localTimezone()).strftime(t_format),
+        res['dusk'].astimezone(t.localTimezone()).strftime(t_format),
     )
     print(f"Set:  {W}{t3[0]}{O}  {t3[1]}{B}  {t3[2]}{W}")
     print(f"{B}Moon: {t.moonPhase(res['phase'])} ({res['phase']:0.2f}){W}")

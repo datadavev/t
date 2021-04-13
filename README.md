@@ -62,12 +62,12 @@ Options:
   --help               Show this message and exit.
 ```
 
-Example:
+Example. Rise times are dawn, sunrise, end of golden hour, Set are emas:
 ```
 t s -t "2021-04-24"
 Location: -76.6963,39.0715
 Rise: 05:51:28  06:19:41  06:56:02
-Set:  19:16:19  19:52:39  05:51:28
+Set:  19:16:19  19:52:39  20:20:52
 Moon: 🌔 (0.40)
 ```
 
