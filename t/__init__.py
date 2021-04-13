@@ -73,7 +73,7 @@ def guessLocation():
     '''
     service = "http://radio.garden/api/geo"
     res = requests.get(service, timeout=5)
-    data = res.json
+    data = res.json()
     return data
 
 
@@ -83,3 +83,37 @@ def solarInfo(dt, longitude, latitude):
     moon = suncalc.getMoonIllumination(udt)
     info.update(moon)
     return info
+
+def moonInfo(dt):
+    udt = utcFromDateTime(dt, assume_local=True)
+    return suncalc.getMoonIllumination(udt)
+
+def moonPhase(frac):
+    '''
+    0 - 0.07
+    0.12 -0.19
+    0.25 -0.31
+    0.37 -0.45
+    0.50 -0.55
+    0.62 -0.69
+    0.75 -0.81
+    0.87 -0.93
+    1.0
+    '''
+    if frac < 0.07:
+        return "🌑"
+    if frac < 0.19:
+        return "🌒"
+    if frac < 0.31:
+        return "🌓"
+    if frac < 0.45:
+        return "🌔"
+    if frac < 0.55:
+        return "🌕"
+    if frac < 0.69:
+        return "🌖"
+    if frac < 0.81:
+        return "🌗"
+    if frac < 0.93:
+        return "🌘"
+    return "🌑"

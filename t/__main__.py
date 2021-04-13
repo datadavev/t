@@ -206,8 +206,9 @@ def showCalendar(ctx, cal_file):
 @main.command("s", short_help="Sun and moon")
 @click.option("-l", "--location", default=None, help="Location as longitude,latitude (WGS84, dd)")
 @click.option("-t", "--date", "date_str", default=None, help="Date for calculation")
+@click.option("-f", "--format", "t_format", default="%H:%M:%S", help="Output time format")
 @click.pass_context
-def getSolarInfo(ctx, location, date_str):
+def getSolarInfo(ctx, location, date_str, t_format):
     for_date = None
     if date_str is None:
         for_date = datetime.datetime.now().astimezone()
@@ -224,13 +225,64 @@ def getSolarInfo(ctx, location, date_str):
         _location["longitude"] = float(ltlg[0].strip())
         _location["latitude"] = float(ltlg[1].strip())
     else:
-        location = t.guessLocation()
+        _location = t.guessLocation()
+    logging.debug(json.dumps(_location, indent=2))
     res = t.solarInfo(for_date, _location["longitude"], _location["latitude"])
     if ctx.obj["json_format"]:
         print(json.dumps(res, default=t._jsonConverter))
         return 0
-    print(f"Sunrise: {res['sunrise']}")
-    print(f"Sunset: {res['sunset']}")
+    print(f"{G}Location: {_location['longitude']},{_location['latitude']}{W}")
+    t3 = (
+        res['dawn'].astimezone(t.localTimezone()).strftime(t_format),
+        res['sunrise'].astimezone(t.localTimezone()).strftime(t_format),
+        res['goldenHourEnd'].astimezone(t.localTimezone()).strftime(t_format),
+    )
+    print(f"Rise: {B}{t3[0]}{O}  {t3[1]}{W}  {t3[2]}")
+    t3 = (
+        res['goldenHour'].astimezone(t.localTimezone()).strftime(t_format),
+        res['sunset'].astimezone(t.localTimezone()).strftime(t_format),
+        res['dawn'].astimezone(t.localTimezone()).strftime(t_format),
+    )
+    print(f"Set:  {W}{t3[0]}{O}  {t3[1]}{B}  {t3[2]}{W}")
+    print(f"{B}Moon: {t.moonPhase(res['phase'])} ({res['phase']:0.2f}){W}")
+
+
+@main.command("m", short_help="Moon matrix")
+@click.option("-l", "--location", default=None, help="Location as longitude,latitude (WGS84, dd)")
+@click.option("-y", "--year", "year_str", default=None, help="Year for calculation")
+@click.pass_context
+def getSolarInfo(ctx, location, year_str):
+    cyear = 2021
+    if year_str is None:
+        cyear = datetime.datetime.now().astimezone().year
+    else:
+        cyear = int(year_str)
+    _location = {"latitude":0.0, "longitude":0.0}
+    if location is not None:
+        ltlg = location.strip().split(",")
+        if len(ltlg) != 2:
+            print("Location should be longitude,latitude")
+            return 1
+        _location["longitude"] = float(ltlg[0].strip())
+        _location["latitude"] = float(ltlg[1].strip())
+    else:
+        _location = t.guessLocation()
+    logging.debug(json.dumps(_location, indent=2))
+    print(f"     Moon phases for year: {cyear}")
+    line = "    "
+    for _day in range(1,32):
+        line += f" {_day:02d}"
+    print(line)
+    for _month in range(1,13):
+        line = f"{datetime.datetime(cyear,_month, 1).strftime('%b')} "
+        for _day in range(1,32):
+            try:
+                dt = datetime.datetime(cyear,_month, _day)
+                moon = t.moonInfo(dt)
+                line += f" {t.moonPhase(moon['phase'])}"
+            except ValueError:
+                pass
+        print(line)
 
 
 if __name__ == "__main__":

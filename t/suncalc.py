@@ -2,7 +2,7 @@
 # Updated for Python 3
 
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import time
 import calendar
 
@@ -56,7 +56,8 @@ def toJulian(date):
 
 
 def fromJulian(j):
-    return datetime.fromtimestamp(((j + 0.5 - J1970) * dayMs) / 1000.0)
+    #fromtimestamp returns local time unless tz is specified
+    return datetime.fromtimestamp(((j + 0.5 - J1970) * dayMs) / 1000.0, tz=timezone.utc)
 
 
 def toDays(date):
@@ -166,8 +167,8 @@ def getTimes(date, lat, lng):
         time = times[i]
         Jset = getSetJ(time[0] * rad, lw, phi, dec, n, M, L)
         Jrise = Jnoon - (Jset - Jnoon)
-        result[time[1]] = fromJulian(Jrise).strftime("%Y-%m-%d %H:%M:%S")
-        result[time[2]] = fromJulian(Jset).strftime("%Y-%m-%d %H:%M:%S")
+        result[time[1]] = fromJulian(Jrise)
+        result[time[2]] = fromJulian(Jset)
     return result
 
 
