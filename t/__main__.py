@@ -7,8 +7,8 @@ import click
 import pytz
 import dateparser
 import t
-import requests
-import ics
+#import requests
+#import ics
 
 W = "\033[0m"  # white (normal)
 R = "\033[31m"  # red
@@ -172,35 +172,35 @@ def eventToJson(e):
     res['duration'] = e.duration
     return res
 
-@main.command("c", short_help="Show calendar .ics")
-@click.argument("cal_file")
-@click.pass_context
-def showCalendar(ctx, cal_file):
-    cc = None
-    if not cal_file.startswith("http"):
-        if not os.path.exists(cal_file):
-            print(f"{R}Oops!{W} Can't find the .ics file: {cal_file}")
-            return 1
-        cc = ics.Calendar(open(cal_file, "r").read())
-    else:
-        cc = ics.Calendar(requests.get(cal_file, timeout=10).text)
-    if cc is None:
-        print(f"{R}Oops!{W} No calendar loaded")
-    n_events = len(cc.events)
-    print(f"{G}{len(cc.events)} event{'' if n_events ==0 else 's'}{W} in {cal_file}")
-    i = 1
-    while len(cc.events) > 0:
-        evnt = cc.events.pop()
-        ej = eventToJson(evnt)
-        if ctx.obj["json_format"]:
-            print(json.dumps(ej, indent=2, default=t._jsonConverter))
-        else:        
-            print(f"Summary: {evnt.summary}")
-            print(f"Description: {evnt.description}")
-            print(f"Location: {evnt.location}")
-            print(f"URL: {evnt.url}")
-            print(f"Start: {evnt.begin}  {evnt.begin.astimezone(t.localTimezone())}")
-            print(f"End: {evnt.end}  {evnt.end.astimezone(t.localTimezone())}")
+# @main.command("c", short_help="Show calendar .ics")
+# @click.argument("cal_file")
+# @click.pass_context
+# def showCalendar(ctx, cal_file):
+#     cc = None
+#     if not cal_file.startswith("http"):
+#         if not os.path.exists(cal_file):
+#             print(f"{R}Oops!{W} Can't find the .ics file: {cal_file}")
+#             return 1
+#         cc = ics.Calendar(open(cal_file, "r").read())
+#     else:
+#         cc = ics.Calendar(requests.get(cal_file, timeout=10).text)
+#     if cc is None:
+#         print(f"{R}Oops!{W} No calendar loaded")
+#     n_events = len(cc.events)
+#     print(f"{G}{len(cc.events)} event{'' if n_events ==0 else 's'}{W} in {cal_file}")
+#     i = 1
+#     while len(cc.events) > 0:
+#         evnt = cc.events.pop()
+#         ej = eventToJson(evnt)
+#         if ctx.obj["json_format"]:
+#             print(json.dumps(ej, indent=2, default=t._jsonConverter))
+#         else:
+#             print(f"Summary: {evnt.summary}")
+#             print(f"Description: {evnt.description}")
+#             print(f"Location: {evnt.location}")
+#             print(f"URL: {evnt.url}")
+#             print(f"Start: {evnt.begin}  {evnt.begin.astimezone(t.localTimezone())}")
+#             print(f"End: {evnt.end}  {evnt.end.astimezone(t.localTimezone())}")
         
 
 @main.command("s", short_help="Sun and moon")
@@ -248,7 +248,6 @@ def getSolarInfo(ctx, location, date_str, t_format):
 
 
 @main.command("m", short_help="Moon matrix")
-@click.option("-l", "--location", default=None, help="Location as longitude,latitude (WGS84, dd)")
 @click.option("-y", "--year", "year_str", default=None, help="Year for calculation")
 @click.pass_context
 def getSolarInfo(ctx, location, year_str):
@@ -257,17 +256,6 @@ def getSolarInfo(ctx, location, year_str):
         cyear = datetime.datetime.now().astimezone().year
     else:
         cyear = int(year_str)
-    _location = {"latitude":0.0, "longitude":0.0}
-    if location is not None:
-        ltlg = location.strip().split(",")
-        if len(ltlg) != 2:
-            print("Location should be longitude,latitude")
-            return 1
-        _location["longitude"] = float(ltlg[0].strip())
-        _location["latitude"] = float(ltlg[1].strip())
-    else:
-        _location = t.guessLocation()
-    logging.debug(json.dumps(_location, indent=2))
     print(f"     Moon phases for year: {cyear}")
     line = "    "
     for _day in range(1,32):

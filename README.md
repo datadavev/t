@@ -1,22 +1,74 @@
 # t
 
-Simple command line tool for showing time in different time zones.
+Command line tool for showing time in different time zones and other temporal information.
 
 ```
-pip install --user myt
+pipx install --user myt
 ```
 
 ```
 Usage: t [OPTIONS] COMMAND [ARGS]...
 
 Options:
-  -F, --outformat [text|json]  Output format (text | json)
-  --help                       Show this message and exit.
+  -J, --json  Output in JSON
+  --help      Show this message and exit.
 
 Commands:
+  m      Moon matrix
+  s      Sun and moon
   t      Time in different zones
-  z      24hrs for time zones (on date)
+  z      24hrs in time zones (on date)
   zones  List common time zones and UTC offset (on date)
+```
+
+## t m
+
+```
+Usage: t m [OPTIONS]
+
+Options:
+  -y, --year TEXT  Year for calculation
+  --help           Show this message and exit.
+```
+
+Example: 
+```
+t % t m
+     Moon phases for year: 2021
+     01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+Jan  🌖 🌖 🌖 🌖 🌗 🌗 🌗 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌒 🌓 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌔 🌕 🌕 🌕 🌖
+Feb  🌖 🌖 🌗 🌗 🌗 🌗 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌒 🌓 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌕 🌕 🌕
+Mar  🌖 🌖 🌖 🌖 🌗 🌗 🌗 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌒 🌓 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌕 🌕 🌖 🌖
+Apr  🌖 🌖 🌗 🌗 🌗 🌗 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌒 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌕 🌕 🌕 🌖 🌖
+May  🌖 🌖 🌗 🌗 🌗 🌘 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌒 🌓 🌓 🌓 🌓 🌔 🌔 🌔 🌕 🌕 🌕 🌖 🌖 🌖 🌖
+Jun  🌗 🌗 🌗 🌗 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌒 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌕 🌕 🌖 🌖 🌖 🌖 🌗
+Jul  🌗 🌗 🌗 🌘 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌕 🌕 🌕 🌖 🌖 🌖 🌖 🌗 🌗
+Aug  🌗 🌗 🌘 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌓 🌓 🌓 🌓 🌔 🌔 🌔 🌕 🌕 🌕 🌖 🌖 🌖 🌖 🌖 🌗 🌗 🌗
+Sep  🌗 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌒 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌕 🌕 🌕 🌖 🌖 🌖 🌖 🌗 🌗 🌗 🌗
+Oct  🌘 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌕 🌕 🌕 🌖 🌖 🌖 🌖 🌖 🌗 🌗 🌗 🌗 🌘
+Nov  🌘 🌘 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌓 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌕 🌕 🌕 🌖 🌖 🌖 🌖 🌖 🌗 🌗 🌗 🌘 🌘
+Dec  🌘 🌘 🌑 🌑 🌑 🌒 🌒 🌒 🌒 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌔 🌕 🌕 🌕 🌖 🌖 🌖 🌖 🌖 🌗 🌗 🌗 🌘 🌘 🌘
+```
+
+## t s
+
+```
+Usage: t s [OPTIONS]
+
+Options:
+  -l, --location TEXT  Location as longitude,latitude (WGS84, dd)
+  -t, --date TEXT      Date for calculation
+  -f, --format TEXT    Output time format
+  --help               Show this message and exit.
+```
+
+Example:
+```
+t s -t "2021-04-24"
+Location: -76.6963,39.0715
+Rise: 05:51:28  06:19:41  06:56:02
+Set:  19:16:19  19:52:39  05:51:28
+Moon: 🌔 (0.40)
 ```
 
 ## t t
@@ -34,7 +86,7 @@ Options:
 
 Example:
 ```
-$ t t -t "1 April 8pm"
+t t -t "1 April 8pm"
 Local             2021-04-01T20:00:00-0400
 Europe/Copenhagen 2021-04-02T02:00:00+0200
 UTC               2021-04-02T00:00:00+0000
@@ -65,7 +117,7 @@ Options:
 
 Example:
 ```
-$ t z
+t z
 Local             07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 00 01 02 03 04 05 06
 Europe/Copenhagen 12 13 14 15 16 17 18 19 20 21 22 23 00 01 02 03 04 05 06 07 08 09 10 11
 UTC               11 12 13 14 15 16 17 18 19 20 21 22 23 00 01 02 03 04 05 06 07 08 09 10
@@ -94,7 +146,7 @@ Options:
 
 Example:
 ```
-$ t zones -t "2021-12-21"
+t zones -t "2021-12-21"
 -11:00 Pacific/Midway
 -11:00 Pacific/Niue
 -11:00 Pacific/Pago_Pago

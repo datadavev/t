@@ -17,10 +17,9 @@ python = "^3.7"
 dateparser = "^1.0.0"
 click = "^7.1.2"
 pytz = "^2021.1"
-ics = {git = "https://github.com/ics-py/ics-py.git", rev = "timezones"}
+#ics = {git = "https://github.com/ics-py/ics-py.git", rev = "timezones"}
 requests = "^2.25.1"
-diskcache = "^5.2.1"
-suncalcPy = "^0.1"
+#diskcache = "^5.2.1"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^20.8b1", allow-prereleases = true}
