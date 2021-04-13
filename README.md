@@ -31,9 +31,9 @@ Options:
   --help           Show this message and exit.
 ```
 
-Example: 
+Example (alignment looks OK in terminal): 
 ```
-t % t m
+t m
      Moon phases for year: 2021
      01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
 Jan  🌖 🌖 🌖 🌖 🌗 🌗 🌗 🌘 🌘 🌘 🌑 🌑 🌑 🌑 🌒 🌒 🌒 🌒 🌓 🌓 🌓 🌓 🌔 🌔 🌔 🌔 🌔 🌕 🌕 🌕 🌖
