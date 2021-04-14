@@ -10,12 +10,12 @@ import t
 #import requests
 #import ics
 
-W = "\033[0m"  # white (normal)
-R = "\033[31m"  # red
-G = "\033[32m"  # green
-O = "\033[33m"  # orange
-B = "\033[34m"  # blue
-P = "\033[35m"  # purple
+W = ""  # white (normal)
+R = ""  # red
+G = ""  # green
+O = ""  # orange
+B = ""  # blue
+P = ""  # purple
 
 DEFAULT_ZONES = [
     "UTC",
@@ -68,10 +68,25 @@ def _printRow(row, t_format):
     is_flag = True,
     help="Output in JSON",
 )
+@click.option(
+    "-C",
+    "--color",
+    "color_format",
+    is_flag = True,
+    help="Use colors in terminal",
+)
 @click.pass_context
-def main(ctx, json_format):
+def main(ctx, json_format, color_format):
     ctx.ensure_object(dict)
     ctx.obj["json_format"] = json_format
+    if color_format:
+        global W, R, G, O, B, P
+        W = "\033[0m"  # white (normal)
+        R = "\033[31m"  # red
+        G = "\033[32m"  # green
+        O = "\033[33m"  # orange
+        B = "\033[34m"  # blue
+        P = "\033[35m"  # purple
     return 0
 
 
