@@ -7,8 +7,9 @@ import click
 import pytz
 import dateparser
 import t
-#import requests
-#import ics
+
+# import requests
+# import ics
 
 W = ""  # white (normal)
 R = ""  # red
@@ -65,14 +66,14 @@ def _printRow(row, t_format):
     "-J",
     "--json",
     "json_format",
-    is_flag = True,
+    is_flag=True,
     help="Output in JSON",
 )
 @click.option(
     "-C",
     "--color",
     "color_format",
-    is_flag = True,
+    is_flag=True,
     help="Use colors in terminal",
 )
 @click.pass_context
@@ -176,16 +177,18 @@ def showTimes(ctx, date_str, zone_list):
     for row in res:
         print(f"{row[0]:17} {t.datetimeToJsonStr(row[1])}")
 
+
 def eventToJson(e):
     res = {}
-    res['start'] = e.begin.astimezone(t.localTimezone())
-    res['end'] = e.end.astimezone(t.localTimezone())
-    res['summary'] = t._stripper(e.summary)
-    res['description'] = t._stripper(e.description)
-    res['location'] = e.location
-    res['status'] = e.status
-    res['duration'] = e.duration
+    res["start"] = e.begin.astimezone(t.localTimezone())
+    res["end"] = e.end.astimezone(t.localTimezone())
+    res["summary"] = t._stripper(e.summary)
+    res["description"] = t._stripper(e.description)
+    res["location"] = e.location
+    res["status"] = e.status
+    res["duration"] = e.duration
     return res
+
 
 # @main.command("c", short_help="Show calendar .ics")
 # @click.argument("cal_file")
@@ -216,12 +219,16 @@ def eventToJson(e):
 #             print(f"URL: {evnt.url}")
 #             print(f"Start: {evnt.begin}  {evnt.begin.astimezone(t.localTimezone())}")
 #             print(f"End: {evnt.end}  {evnt.end.astimezone(t.localTimezone())}")
-        
+
 
 @main.command("s", short_help="Sun and moon")
-@click.option("-l", "--location", default=None, help="Location as longitude,latitude (WGS84, dd)")
+@click.option(
+    "-l", "--location", default=None, help="Location as longitude,latitude (WGS84, dd)"
+)
 @click.option("-t", "--date", "date_str", default=None, help="Date for calculation")
-@click.option("-f", "--format", "t_format", default="%H:%M:%S", help="Output time format")
+@click.option(
+    "-f", "--format", "t_format", default="%H:%M:%S", help="Output time format"
+)
 @click.pass_context
 def getSolarInfo(ctx, location, date_str, t_format):
     for_date = None
@@ -231,7 +238,7 @@ def getSolarInfo(ctx, location, date_str, t_format):
         for_date = dateparser.parse(
             date_str, settings={"RETURN_AS_TIMEZONE_AWARE": True}
         )
-    _location = {"latitude":0.0, "longitude":0.0}
+    _location = {"latitude": 0.0, "longitude": 0.0}
     if location is not None:
         ltlg = location.strip().split(",")
         if len(ltlg) != 2:
@@ -246,19 +253,19 @@ def getSolarInfo(ctx, location, date_str, t_format):
     if ctx.obj["json_format"]:
         print(json.dumps(res, default=t._jsonConverter))
         return 0
-    print(f"{G}Location: {_location['longitude']},{_location['latitude']}{W}")
+    print(f"{G}Location: [{_location['longitude']},{_location['latitude']}]{W}")
     t3 = (
-        res['dawn'].astimezone(t.localTimezone()).strftime(t_format),
-        res['sunrise'].astimezone(t.localTimezone()).strftime(t_format),
-        res['goldenHourEnd'].astimezone(t.localTimezone()).strftime(t_format),
+        res["dawn"].astimezone(t.localTimezone()).strftime(t_format),
+        res["sunrise"].astimezone(t.localTimezone()).strftime(t_format),
+        res["goldenHourEnd"].astimezone(t.localTimezone()).strftime(t_format),
     )
-    print(f"Rise: {B}{t3[0]}{O}  {t3[1]}{W}  {t3[2]}")
+    print(f"Rise:\n  - {B}{t3[0]}{W}\n  - {O}{t3[1]}{W}\n  - {t3[2]}")
     t3 = (
-        res['goldenHour'].astimezone(t.localTimezone()).strftime(t_format),
-        res['sunset'].astimezone(t.localTimezone()).strftime(t_format),
-        res['dusk'].astimezone(t.localTimezone()).strftime(t_format),
+        res["goldenHour"].astimezone(t.localTimezone()).strftime(t_format),
+        res["sunset"].astimezone(t.localTimezone()).strftime(t_format),
+        res["dusk"].astimezone(t.localTimezone()).strftime(t_format),
     )
-    print(f"Set:  {W}{t3[0]}{O}  {t3[1]}{B}  {t3[2]}{W}")
+    print(f"Set:\n  - {t3[0]}\n  - {O}{t3[1]}{W}\n  - {B}{t3[2]}{W}")
     print(f"{B}Moon: {t.moonPhase(res['phase'])} ({res['phase']:0.2f}){W}")
 
 
@@ -273,14 +280,14 @@ def getSolarInfo(ctx, year_str):
         cyear = int(year_str)
     print(f"     Moon phases for year: {cyear}")
     line = "    "
-    for _day in range(1,32):
+    for _day in range(1, 32):
         line += f" {_day:02d}"
     print(line)
-    for _month in range(1,13):
+    for _month in range(1, 13):
         line = f"{datetime.datetime(cyear,_month, 1).strftime('%b')} "
-        for _day in range(1,32):
+        for _day in range(1, 32):
             try:
-                dt = datetime.datetime(cyear,_month, _day)
+                dt = datetime.datetime(cyear, _month, _day)
                 moon = t.moonInfo(dt)
                 line += f" {t.moonPhase(moon['phase'])}"
             except ValueError:
