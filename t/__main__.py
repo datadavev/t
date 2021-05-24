@@ -11,6 +11,18 @@ import t
 # import requests
 # import ics
 
+LOG_LEVELS = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "WARN": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "FATAL": logging.CRITICAL,
+    "CRITICAL": logging.CRITICAL,
+}
+LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+LOG_FORMAT = "%(asctime)s %(name)s:%(levelname)s: %(message)s"
+
 W = ""  # white (normal)
 R = ""  # red
 G = ""  # green
@@ -37,6 +49,8 @@ DEFAULT_ZONES = [
     "Europe/Copenhagen",
 ]
 
+def getLogger():
+    return logging.getLogger("t")
 
 def _dtDeltaHours(td):
     return td.seconds / 3600.0 + td.days * 24.0
@@ -76,8 +90,20 @@ def _printRow(row, t_format):
     is_flag=True,
     help="Use colors in terminal",
 )
+@click.option(
+    "--loglevel", envvar="T_LOGLEVEL", default="INFO", help="Specify logging level", show_default=True
+)
 @click.pass_context
-def main(ctx, json_format, color_format):
+def main(ctx, json_format, color_format, loglevel):
+    loglevel = loglevel.upper()
+    logging.basicConfig(
+        level=LOG_LEVELS.get(loglevel, logging.INFO),
+        format=LOG_FORMAT,
+        datefmt=LOG_DATE_FORMAT,
+    )
+    L = getLogger()
+    if loglevel not in LOG_LEVELS.keys():
+        L.warning("%s is not a log level, set to INFO", loglevel)
     ctx.ensure_object(dict)
     ctx.obj["json_format"] = json_format
     if color_format:
@@ -223,7 +249,7 @@ def eventToJson(e):
 
 @main.command("s", short_help="Sun and moon")
 @click.option(
-    "-l", "--location", default=None, help="Location as longitude,latitude (WGS84, dd)"
+    "-l", "--location", envvar="T_LOCATION", default=None, help="Location as latitude,longitude (WGS84, dd)"
 )
 @click.option("-t", "--date", "date_str", default=None, help="Date for calculation")
 @click.option(
@@ -244,11 +270,12 @@ def getSolarInfo(ctx, location, date_str, t_format):
         if len(ltlg) != 2:
             print("Location should be longitude,latitude")
             return 1
-        _location["longitude"] = float(ltlg[0].strip())
-        _location["latitude"] = float(ltlg[1].strip())
+        _location["latitude"] = float(ltlg[0].strip())
+        _location["longitude"] = float(ltlg[1].strip())
     else:
         _location = t.guessLocation()
-    logging.debug(json.dumps(_location, indent=2))
+    logging.debug("Location: %s", json.dumps(_location, indent=2))
+    logging.debug("For date: %s", for_date)
     res = t.solarInfo(for_date, _location["longitude"], _location["latitude"])
     if ctx.obj["json_format"]:
         print(json.dumps(res, default=t._jsonConverter))
