@@ -1,6 +1,7 @@
 import pytz
 import datetime
 import json
+import logging
 import requests
 from . import suncalc
 
@@ -72,8 +73,16 @@ def guessLocation():
     '''Guess location from external ip
     '''
     service = "http://radio.garden/api/geo"
-    res = requests.get(service, timeout=5)
-    data = res.json()
+    headers = {
+        "User-Agent":"MyT/0.5.6 radio.garden advocate",
+        "Accept":"application/json",
+    }
+    res = requests.get(service, headers=headers, timeout=5)
+    try:
+        data = res.json()
+    except Exception as e:
+        logging.error("Could not guess location, using 0.0, 0.0\n%s",e)
+        data = {"latitude":0.0, "longitude":0.0}
     return data
 
 

@@ -170,6 +170,9 @@ t zones -t "2021-12-21"
 
 ## Change Log
 
+v0.5.6
+- Added handling of bad response from location estimation
+
 v0.5.5 
 - Added T_LOCATION and T_LOGLEVEL environment variable options
 - Cleaned up some math in suncalc
