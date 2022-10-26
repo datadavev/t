@@ -117,3 +117,16 @@ def moonPhase(frac):
     if frac < 0.93:
         return "🌘"
     return "🌑"
+
+
+def julian_day_from_datetime(d):
+    """
+    """
+    y = _d.year
+    m = _d.month
+    d = _d.day
+
+    # Formula from Wikipedia
+    jd = ((1461 * (y + 4800 + (-1 if m<3 else 0))) // 4 + (367 * (m - 2 - 12 * ((-1 if m<3 else 0)))) // 12 - (3 * ((y + 4900 + (-1 if m<3 else 0)) // 100)) // 4 + d - 32075)
+    return jd
+    
