@@ -1,17 +1,36 @@
-import pytz
 import datetime
-import json
-import logging
-import requests
-from . import suncalc
+from t import suncalc
 
 JSON_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 """datetime format string for generating JSON content
 """
 
+
+class TagDateTime(datetime.datetime):
+    def __init__(self, *args, **kwargs):
+        self.tags = kwargs.pop("tags", {})
+        if isinstance(args[0], datetime.datetime):
+            t = args[0]
+            super().__init__(
+                t.year,
+                t.month,
+                t.day,
+                hour=t.hour,
+                minute=t.minute,
+                second=t.second,
+                microsecond=t.microsecond,
+                tzinfo=t.tzinfo,
+                fold=t.fold,
+            )
+        else:
+            super().__init__(*args, **kwargs)
+
+
 def localTimezone():
-    tznow = datetime.datetime.now().astimezone()
-    return tznow.tzinfo
+    tznow = datetime.datetime.now()
+    tznowtz = tznow.astimezone()
+    return tznowtz.tzinfo
+
 
 def datetimeToJsonStr(dt):
     if dt is None:
@@ -35,6 +54,7 @@ def utcFromDateTime(dt, assume_local=True):
     # convert to utc timezone
     return dt.astimezone(datetime.timezone.utc)
 
+
 def _jsonConverter(o):
     if isinstance(o, datetime.datetime):
         return datetimeToJsonStr(o)
@@ -43,23 +63,30 @@ def _jsonConverter(o):
 
 def generateDayMatrix(tzones, for_date):
     t0 = for_date.astimezone()
-    row = ['Local', ]
-    for hr in range(0,24):
+    row = [
+        "Local",
+    ]
+    for hr in range(0, 24):
         dt = datetime.timedelta(hours=hr)
-        t1 = t0 + dt
+        t1 = t0.__add__(dt)
         row.append(t1)
-    res = [row, ]
+    res = [
+        row,
+    ]
     for z in tzones:
         t0 = for_date
         t0 = t0.replace(minute=0, second=0, microsecond=0)
-        row = [z.zone, ]
+        row = [
+            z.zone,
+        ]
         for hr in range(0, 24):
             td = datetime.timedelta(hours=hr)
-            t1 = t0 + td
+            t1 = t0.__add__(td)
             t2 = t1.astimezone(z)
             row.append(t2)
         res.append(row)
     return res
+
 
 def _stripper(s):
     try:
@@ -69,21 +96,20 @@ def _stripper(s):
     return s
 
 
-def guessLocation():
-    '''Guess location from external ip
-    '''
-    service = "http://radio.garden/api/geo"
-    headers = {
-        "User-Agent":"MyT/0.5.6 radio.garden advocate",
-        "Accept":"application/json",
-    }
-    res = requests.get(service, headers=headers, timeout=5)
-    try:
-        data = res.json()
-    except Exception as e:
-        logging.error("Could not guess location, using 0.0, 0.0\n%s",e)
-        data = {"latitude":0.0, "longitude":0.0}
-    return data
+# def guessLocation():
+#     """Guess location from external ip"""
+#     service = "http://radio.garden/api/geo"
+#     headers = {
+#         "User-Agent": "MyT/0.5.6 radio.garden advocate",
+#         "Accept": "application/json",
+#     }
+#     res = requests.get(service, headers=headers, timeout=5)
+#     try:
+#         data = res.json()
+#     except Exception as e:
+#         logging.error("Could not guess location, using 0.0, 0.0\n%s", e)
+#         data = {"latitude": 0.0, "longitude": 0.0}
+#     return data
 
 
 def solarInfo(dt, longitude, latitude):
@@ -93,12 +119,14 @@ def solarInfo(dt, longitude, latitude):
     info.update(moon)
     return info
 
+
 def moonInfo(dt):
     udt = utcFromDateTime(dt, assume_local=True)
     return suncalc.getMoonIllumination(udt)
 
+
 def moonPhase(frac):
-    '''
+    """
     0 - 0.07
     0.12 -0.19
     0.25 -0.31
@@ -108,7 +136,7 @@ def moonPhase(frac):
     0.75 -0.81
     0.87 -0.93
     1.0
-    '''
+    """
     if frac < 0.07:
         return "🌑"
     if frac < 0.19:

@@ -41,12 +41,14 @@ DEFAULT_ZONES = [
     "Pacific/Tahiti",
     "Pacific/Auckland",
     "Australia/Sydney",
-    "Australia/Darwin",
+    "Australia/Adelaide",
+    "Australia/Perth",
     "Asia/Hong_Kong",
     "Asia/Tokyo",
     "Asia/Kathmandu",
     "Europe/Riga",
     "Europe/Copenhagen",
+    "Europe/Rome",
 ]
 
 def getLogger():
@@ -62,7 +64,7 @@ def _hrsToHHMM(hrs):
     return hh, mm
 
 
-def _printRow(row, t_format):
+def _printRow(row, t_format, h_col=None):
     tz = row[0]
     line = f"{tz:17}"
     for v in row[1:]:
@@ -70,7 +72,7 @@ def _printRow(row, t_format):
             sv = f" {B}{v.strftime(t_format)}{W}"
         else:
             sv = f" {O}{v.strftime(t_format)}{W}"
-        line = line + sv
+        line += sv
     line += W
     return line
 
@@ -168,7 +170,7 @@ def showZones(ctx, t_format, date_str, zone_list):
         return 0
     print(_printRow(res[0], t_format))
     for row in res[1:]:
-        print(_printRow(row, t_format))
+        print(_printRow(row, t_format, h_col=3))
     return 0
 
 
@@ -249,7 +251,7 @@ def eventToJson(e):
 
 @main.command("s", short_help="Sun and moon")
 @click.option(
-    "-l", "--location", envvar="T_LOCATION", default=None, help="Location as latitude,longitude (WGS84, dd)"
+    "-l", "--location", envvar="T_LOCATION", default="131.031,-25.345", help="Location as latitude,longitude (WGS84, dd)"
 )
 @click.option("-t", "--date", "date_str", default=None, help="Date for calculation")
 @click.option(
@@ -265,15 +267,12 @@ def getSolarInfo(ctx, location, date_str, t_format):
             date_str, settings={"RETURN_AS_TIMEZONE_AWARE": True}
         )
     _location = {"latitude": 0.0, "longitude": 0.0}
-    if location is not None:
-        ltlg = location.strip().split(",")
-        if len(ltlg) != 2:
-            print("Location should be longitude,latitude")
-            return 1
-        _location["latitude"] = float(ltlg[0].strip())
-        _location["longitude"] = float(ltlg[1].strip())
-    else:
-        _location = t.guessLocation()
+    ltlg = location.strip().split(",")
+    if len(ltlg) != 2:
+        print("Location should be longitude,latitude")
+        return 1
+    _location["latitude"] = float(ltlg[0].strip())
+    _location["longitude"] = float(ltlg[1].strip())
     logging.debug("Location: %s", json.dumps(_location, indent=2))
     logging.debug("For date: %s", for_date)
     res = t.solarInfo(for_date, _location["longitude"], _location["latitude"])

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>t</title>
+    <link rel="shortcut icon" href="web/favicon.ico">
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org/",
+            "@graph": [
+                {
+                    "@type": "WebSite",
+                    "title": "t",
+                    "about": "https://github.com/datadavev/myt",
+                    "abstract": "A web interface to t, providing relativity.",
+                    "author": {
+                        "@id": "https://orcid.org/0000-0002-6513-4996"
+                    },
+                    "dateCreated": "2021-08-24"
+                }
+            ]
+        }
+    </script>
+    <!--<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css"/> -->
+    <link rel="stylesheet" href="web/t.css"/>
+    <script type="module" src="https://unpkg.com/gh-corner-wc/gh-corner.js?module"></script>
+    <script src="web/t.js"></script>
+    <!-- UI interaction code-->
+    <script src="web/t-zones.js" type="module"></script>
+    <script type="module">
+        import * as datetime from "./web/lib/datetime.js";
+        window.datetime = datetime;
+    </script>
+</head>
+<body>
+<header>
+    <gh-corner user="datadavev" repo="t"></gh-corner>
+    <h1>t z</h1>
+</header>
+<main>
+  <section>
+      <t-zones></t-zones>
+  </section>
+</main>
+    <footer x-data="siteinfo" x-init="update()">
+        <p x-text="_info"></p>
+    </footer>
+</body>
+</html>

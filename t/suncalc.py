@@ -4,7 +4,6 @@
 import math
 from datetime import datetime, timedelta, timezone
 import time
-import calendar
 
 _rad = math.pi / 180.0
 dayMs = 1000 * 60 * 60 * 24

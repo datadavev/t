@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500&display=swap');
+:root {
+    --t-zones-font-family: 'Inconsolata';
+}
+body {
+    font-size: 16px;
+}

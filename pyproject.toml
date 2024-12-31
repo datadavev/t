@@ -20,9 +20,14 @@ pytz = "^2021.1"
 #ics = {git = "https://github.com/ics-py/ics-py.git", rev = "timezones"}
 requests = "^2.25.1"
 #diskcache = "^5.2.1"
+tzdata = "^2021.1"
+icalendar = "^4.1.0"
+recurring-ical-events = "^1.0.3b0"
+timehash = "^1.2"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^20.8b1", allow-prereleases = true}
+Transcrypt = "^3.9.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
