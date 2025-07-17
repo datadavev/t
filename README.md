@@ -3,6 +3,12 @@
 Command line tool for showing time in different time zones and other temporal information.
 
 ```
+uv tool install https://github.com/datadavev/t.git
+```
+
+or 
+
+```
 pipx install --user myt
 ```
 
