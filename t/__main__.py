@@ -251,7 +251,7 @@ def eventToJson(e):
 
 @main.command("s", short_help="Sun and moon")
 @click.option(
-    "-l", "--location", envvar="T_LOCATION", default="131.031,-25.345", help="Location as latitude,longitude (WGS84, dd)"
+    "-l", "--location", envvar="T_LOCATION", default="39.03,-76.56", help="Location as latitude,longitude (WGS84, dd)"
 )
 @click.option("-t", "--date", "date_str", default=None, help="Date for calculation")
 @click.option(

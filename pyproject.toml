@@ -3,7 +3,7 @@ name = "myt"
 version = "0.5.6"
 description = "Time, zones"
 authors = [{ name = "datadavev", email = "605409+datadavev@users.noreply.github.com" }]
-requires-python = "~=3.7"
+requires-python = ">=3.10"
 readme = "README.md"
 license = "Apache-2.0"
 keywords = [
